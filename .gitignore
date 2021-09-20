@@ -1,0 +1,13 @@
+
+# ignore the glove vectors
+glove.*.txt
+
+# model file
+*.h5
+
+# ipython checkpoints
+.ipynb_checkpoints/
+
+# macos stuff
+.DS_Store
+
