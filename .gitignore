@@ -1,13 +1,22 @@
 
+__pycache__
+
 # ignore the glove vectors
 glove.*.txt
 
 # model file
 *.h5
+*.h5.zip
+
+tokenizer.*.json
 
 # ipython checkpoints
 .ipynb_checkpoints/
 
 # macos stuff
 .DS_Store
+
+# model_ignore dir
+data_ignore
+data_ignore*
 

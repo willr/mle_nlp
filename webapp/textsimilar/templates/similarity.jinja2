@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    {% include 'navigation.html' %}
+    <div class="form-wrapper">
+      <h2 class="title">Text Similarity Submission</h2>
+
+      <form method="POST" action="{{ url_for('is_similar') }}">
+
+        <fieldset class="form-field">
+            {{ form.q1.label }}
+            {{ form.q1(size=150) }}
+                {% if form.q1.errors %}
+                    <ul class="errors">
+                    {% for error in form.q2.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+        </fieldset>
+
+        <fieldset class="form-field">
+            {{ form.q2.label }}
+            {{ form.q2(size=150) }}
+                {% if form.q2.errors %}
+                    <ul class="errors">
+                    {% for error in form.q2.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+        </fieldset>
+
+        {{ form.submit }}
+
+      </form>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+<div class="container">
+    <p>
+        <ul>
+            {% for st in results %}
+            <li>
+                <p>Submitted: {{ st.formatted_dt }}</p>
+                <p>Q1: {{ st.q1 }}</p>
+                <p>Q2: {{ st.q2 }}</p>
+                <p>Likely similar meaning: {{ st.rounded }} %</p>
+                <p>Probability: {{ st.probability }}</p>
+                <hr>
+            </li>
+            {% endfor %}
+        </ul>
+    </p>
+</div>
