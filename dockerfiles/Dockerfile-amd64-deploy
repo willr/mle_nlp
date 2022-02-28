@@ -6,6 +6,7 @@ ENV PATH="/root/miniconda3/bin:${PATH}"
 ARG PATH="/root/miniconda3/bin:${PATH}"
 
 WORKDIR /app
+EXPOSE 5000/tcp
 
 # setup the conda env
 COPY ./environments/environment.tf_26_deploy.amd64.linux.yaml ./
@@ -28,3 +29,5 @@ COPY ./data_ignore/tokenizer.bilstm5.json /app/data_ignore/
 COPY ./src/webapp/ /app/webapp/
 COPY ./src/web.app.py /app/
 COPY ./src/json_submit.py /app/
+
+ENTRYPOINT [ "python", "/app/web.app.py" ]

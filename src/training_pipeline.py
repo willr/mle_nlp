@@ -200,10 +200,10 @@ def run_model_training(model: Model, bst_model_path: str, train_data_1: Sequence
 
 def save_model(model: Model, tokenizer: Tokenizer):
     # save the model
-    model.save(c.VERSION)
+    model.save(f'./model_save/{c.VERSION}')
     tokenizer_json = tokenizer.to_json()
     print(f'size of tokenizer json: {len(tokenizer_json)}')
-    with open(f'tokenizer.{c.VERSION}.json', 'w') as token_json:
+    with open(f'./model_save/tokenizer.{c.VERSION}.json', 'w') as token_json:
         token_json.write(tokenizer_json)
 
 

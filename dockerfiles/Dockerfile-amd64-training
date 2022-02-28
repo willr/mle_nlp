@@ -1,0 +1,28 @@
+FROM python:3.9-slim-buster
+RUN apt-get update && apt-get -y upgrade
+RUN apt-get install wget -y
+
+ENV PATH="/root/miniconda3/bin:${PATH}"
+ARG PATH="/root/miniconda3/bin:${PATH}"
+
+WORKDIR /app
+
+# setup the conda env
+COPY ./environments/environment.tf_26_deploy.amd64.linux.yaml ./
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-x86_64.sh\
+    && mkdir /root/.conda \
+    && bash Miniconda3-py39_4.9.2-Linux-x86_64.sh -b \
+    && rm -f Miniconda3-py39_4.9.2-Linux-x86_64.sh \
+    && echo "Running $(conda --version)" && \
+    conda init bash
+
+# activate the conda env
+RUN . /root/.bashrc \
+    && conda env create -f environment.tf_26_training.amd64.linux.yaml \
+    && conda activate tf_26_training
+
+# trainging pipeline files
+COPY ./src/constants.py /app/
+COPY ./src/training_pipeline.py /app/
+
+ENTRYPOINT [ "python", "/app/training_pipeline.py" ]
