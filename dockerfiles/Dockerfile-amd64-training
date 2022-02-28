@@ -25,4 +25,4 @@ RUN . /root/.bashrc \
 COPY ./src/constants.py /app/
 COPY ./src/training_pipeline.py /app/
 
-ENTRYPOINT [ "conda", "activate", "tf_26_training", "&&", "python", "/app/training_pipeline.py" ]
+ENTRYPOINT [ "conda init bash &&", ". /root/.bashrc &&", "conda activate tf_26_training &&", "python", "/app/training_pipeline.py" ]
