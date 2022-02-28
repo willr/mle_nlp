@@ -15,6 +15,6 @@ VERSION = f'bilstm-{MODEL_TRAINING_PATIENCE}-1'
 PATH_TO_GLOVE_FILE = './data_ignore/glove.42B.300d.txt'
 PATH_TO_QUESTIONS = './data_ignore/questions.csv.zip'
 
-TEST_SIZE = 0.95
+TEST_SIZE = 0.98
 RANDOM_STATE = 42
 
