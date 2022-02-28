@@ -25,6 +25,7 @@ dependencies:
   - click=8.0.3=pyhd3eb1b0_0
   - cryptography=3.4.8=py39hd23ed53_0
   - dataclasses=0.8=pyh6d0b6a4_7
+  - flask=2.0.2=pyhd3eb1b0_0
   - flatbuffers=2.0.0=h2531618_0
   - frozenlist=1.2.0=py39h7f8727e_0
   - gast=0.4.0=pyhd3eb1b0_0
@@ -39,6 +40,8 @@ dependencies:
   - idna=3.3=pyhd3eb1b0_0
   - importlib-metadata=4.8.2=py39h06a4308_0
   - intel-openmp=2021.4.0=h06a4308_3561
+  - itsdangerous=2.0.1=pyhd3eb1b0_0
+  - jinja2=3.0.2=pyhd3eb1b0_0
   - jpeg=9d=h7f8727e_0
   - keras=2.6.0=pyhd3eb1b0_0
   - keras-preprocessing=1.1.2=pyhd3eb1b0_0
@@ -58,6 +61,7 @@ dependencies:
   - libssh2=1.9.0=h1ba5d50_1
   - libstdcxx-ng=9.3.0=hd4cf53a_17
   - markdown=3.3.4=py39h06a4308_0
+  - markupsafe=2.0.1=py39h27cfd23_0
   - mkl=2021.4.0=h06a4308_640
   - mkl-service=2.4.0=py39h7f8727e_0
   - mkl_fft=1.3.1=py39hd3c417c_0
@@ -107,4 +111,7 @@ dependencies:
   - yarl=1.6.3=py39h27cfd23_0
   - zipp=3.7.0=pyhd3eb1b0_0
   - zlib=1.2.11=h7f8727e_4
-prefix: /home/will/Development/miniconda3/envs/tf_26_deploy
+  - pip:
+    - flask-wtf==1.0.0
+    - wtforms==3.0.1
+prefix: /root/miniconda3/envs/tf_26_deploy

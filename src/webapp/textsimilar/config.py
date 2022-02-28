@@ -20,12 +20,12 @@ class TestConfig(Config):
     DEBUG = False
     TESTING = True
     ML_MODEL_PATH = './data_ignore/bilstm5'
-    TOKENIZER_PATH = './tokenizer.bilstm5.json'
+    TOKENIZER_PATH = './data_ignore/tokenizer.bilstm5.json'
 
 class DevConfig(Config):
     FLASK_ENV = 'development'
     DEBUG = True
     TESTING = False
     ML_MODEL_PATH = './data_ignore/bilstm5'
-    TOKENIZER_PATH = './tokenizer.bilstm5.json'
+    TOKENIZER_PATH = './data_ignore/tokenizer.bilstm5.json'
 

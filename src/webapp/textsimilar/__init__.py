@@ -49,6 +49,7 @@ def get_model():
     if ML_Model is None:
         model_path = app.config['ML_MODEL_PATH']
         print(f'Loading ML Model: {model_path} this will take a while....')
-        ML_Model = load_model(model_path) 
+        ML_Model = load_model(model_path)
+        print(f'Finished loading ML Model: {model_path}')
 
     return ML_Model
