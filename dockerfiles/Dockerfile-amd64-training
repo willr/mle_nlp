@@ -28,4 +28,4 @@ COPY ./src/training_pipeline.py /app/
 
 # ENTRYPOINT "conda"
 # CMD conda init bash && . /root/.bashrc && conda activate tf_26_training && python /app/training_pipeline.py
-CMD conda init bash && . /root/.bashrc && conda activate tf_26_training && python mytest.py && touch sleep 10000000
+CMD conda init bash && . /root/.bashrc && conda activate tf_26_training && python mytest.py && sleep 10000000
