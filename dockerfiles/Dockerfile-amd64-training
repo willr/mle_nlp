@@ -8,7 +8,7 @@ ARG PATH="/root/miniconda3/bin:${PATH}"
 WORKDIR /app
 
 # setup the conda env
-COPY ./environments/environment.tf_26_deploy.amd64.linux.yaml ./
+COPY ./environments/environment.tf_26_training.amd64.linux.yaml ./
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-x86_64.sh\
     && mkdir /root/.conda \
     && bash Miniconda3-py39_4.9.2-Linux-x86_64.sh -b \
