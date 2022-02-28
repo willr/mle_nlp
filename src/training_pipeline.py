@@ -1,6 +1,7 @@
 import re
 from typing import Any, Dict, Sequence, Tuple
 import numpy as np
+import os
 import pandas as pd
 import tensorflow as tf
 
@@ -200,12 +201,16 @@ def run_model_training(model: Model, bst_model_path: str, train_data_1: Sequence
 
 def save_model(model: Model, tokenizer: Tokenizer):
     # save the model
-    model.save(f'./model_save/{c.VERSION}')
+    local_model_path = f'./data_ignore/{c.VERSION}'
+    cwd = os.getcwd()
+    print(f'save model to: {os.path.join(cwd, local_model_path)}')
+    model.save(local_model_path)
     tokenizer_json = tokenizer.to_json()
     print(f'size of tokenizer json: {len(tokenizer_json)}')
-    with open(f'./model_save/tokenizer.{c.VERSION}.json', 'w') as token_json:
+    local_tokenizer_path = f'./data_ignore/tokenizer.{c.VERSION}.json'
+    print(f'saving tokenizer to: {os.path.join(cwd, local_tokenizer_path)}')
+    with open(local_tokenizer_path, 'w') as token_json:
         token_json.write(tokenizer_json)
-
 
 if __name__ == "__main__":
 
