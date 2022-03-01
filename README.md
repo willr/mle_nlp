@@ -38,4 +38,18 @@ To serve the model you just created
     - python src/web.app.py
     - deployment env defaults to Development, edit in web.app.py line 3
     - model to load controlled by src/webapp/textsimilar/config.py, edit the appropriate env you have configured
+- either point a web browser at http://localhost:5000 or run: python src/json_submit.py to test the model serving
     
+To serve the model via docker
+- Build a docker container with a previous trained model
+    - edit the model file by editing the file, [docker-build-amd64-deploy.sh] the two docker "build-arg" should be edited
+        - trained model file
+        - serialized tokenizer json file
+- Execute docker build of the deploy container
+    - bash docker-build-amd64-deploy.sh
+- Execute the docker container you just built
+    - bash docker-run-amd64-deploy.sh
+- either point a web browser at http://localhost:5000 or run: python src/json_submit.py to test the model serving
+
+Externally the system is accessible at:
+    - ???
