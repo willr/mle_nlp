@@ -77,12 +77,6 @@ def normalize_text(text):
 
 def generate_train_data() -> Tuple[Sequence, Sequence, Sequence]:
     df = pd.read_csv(c.PATH_TO_QUESTIONS)
-    y = df['is_duplicate']
-    # X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=c.TEST_SIZE, random_state=c.RANDOM_STATE)
-
-    # train_q1 = X_train['question1'].values
-    # train_q2 = X_train['question2'].values
-    # train_labels = X_train['is_duplicate'].values
 
     train_q1 = df['question1'].values
     train_q2 = df['question2'].values
