@@ -109,10 +109,12 @@ def predict(q1: str, q2: str):
 
 # main driver function
 if __name__ == '__main__':
+
+    print('loading the tf/keras model and tokenization file for preprocessing of questions')
+
     q1 = 'What can make Physics easy to learn?'
     q2 = 'How can you make physics easy to learn?'
     predict(q1, q2)
-    # embed = get_word_embeddings()
 
     q1 = 'What should I do to be a great geologist?'
     q2 = 'How can I be a good geologist?'

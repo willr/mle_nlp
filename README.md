@@ -11,6 +11,25 @@ This repo contains:
 - [environments/*.yaml] conda environment files to building the required python environment and dependencies on different platforms. (linux, apple)
 - [dockerfiles/*] docker files for building the container in which to run the code to train the model (not required), and execute the model predictions for deployment
 - [docker-build-*-training.sh] scripts to build a docker container to conduct training of the model (limited to CPU based [slow]).  GPU based training should 
-    be conducted on the host, with access to the GPU and the proper conda environment installed.
-- [docker-build-*-run.sh] scripts to build a docker container for deployment on the respective host.  This will host and serve the model 
-    with a simple website to demonstrate the model in action.
+    be conducted on the host, with access to the GPU and the proper conda environment installed. Replace the * with the correct host environment.
+- [docker-run-*-training.sh] script to run previously built docker container to train the model.  This is CPU based training, nvidia docker was not yet     
+    implmented. Training via GPU currently requires running directly on the host inside a configured conda environment on the host. Replace the * with the correct host environment.
+- [docker-build-*-deploy.sh] scripts to build a docker container for deployment on the respective host.  This will host and serve the model 
+    with a simple website to demonstrate the model in action. Replace the * with the correct host environment.
+- [docker-run-*-deploy] script to run previously built docker container to deploy and serve the model, hosted in a flask env to enable access via simple website
+    to demonstrate the model in action.  Replace the * with the correct host environment.
+
+
+Instructions for deploying the conda training environment locally:
+- Install conda [https://docs.anaconda.com/anaconda/install/]
+- Create a local host based model training environment and activate it
+    - conda env create -f environments/environment.tf_26_training_gpu.amd64.linux.yaml
+    - conda activate tf_26_training_gpu
+- Execute the training pipeline
+    - python src/training_pipeline.py
+    - when this completes the model will be saved into ./data_ignore
+    - model name is the constant VERSION in the constants.py file
+
+To serve the model you just created
+- Create a local host based model deploy environment and activate it
+    - conda env create -f environments/environment.tf_26_deploy_gpu.amd64.linux.yaml
