@@ -201,7 +201,7 @@ def run_model_training(model: Model, bst_model_path: str, train_data_1: Sequence
 
 def save_model(model: Model, tokenizer: Tokenizer):
     # save the model
-    local_model_path = f'./data_ignore/{c.VERSION}'
+    local_model_path = f'data_ignore/{c.VERSION}'
     cwd = os.getcwd()
     print(f'save model to: {os.path.join(cwd, local_model_path)}')
     model.save(local_model_path)
