@@ -78,11 +78,15 @@ def normalize_text(text):
 def generate_train_data() -> Tuple[Sequence, Sequence, Sequence]:
     df = pd.read_csv(c.PATH_TO_QUESTIONS)
     y = df['is_duplicate']
-    X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=c.TEST_SIZE, random_state=c.RANDOM_STATE)
+    # X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=c.TEST_SIZE, random_state=c.RANDOM_STATE)
 
-    train_q1 = X_train['question1'].values
-    train_q2 = X_train['question2'].values
-    train_labels = X_train['is_duplicate'].values
+    # train_q1 = X_train['question1'].values
+    # train_q2 = X_train['question2'].values
+    # train_labels = X_train['is_duplicate'].values
+
+    train_q1 = df['question1'].values
+    train_q2 = df['question2'].values
+    train_labels = df['is_duplicate'].values
 
     train_text_q1 = [] # preprocessed text of q1
     train_text_q2 = [] # preprocessed text of q2
@@ -193,7 +197,7 @@ def run_model_training(model: Model, bst_model_path: str, train_data_1: Sequence
 
     hist = model.fit([train_data_1, train_data_2], train_labels, \
             validation_split=.1, \
-            epochs=1, batch_size=128, shuffle=True, \
+            epochs=25, batch_size=128, shuffle=True, \
             callbacks=[early_stopping, model_checkpoint])
 
     model.load_weights(bst_model_path) # sotre model parameters in .h5 file
