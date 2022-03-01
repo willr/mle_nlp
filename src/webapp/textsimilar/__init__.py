@@ -18,14 +18,14 @@ class Environment(Enum):
     TEST = 2,
     DEVELOPMENT = 3
 
-def create_app(env: Environment):
+def create_app(env: Environment=Environment.PRODUCTION):
     app = Flask(
         __name__,
         instance_relative_config=False,
     )
 
     if env == Environment.PRODUCTION:
-        app.config.from_object('config.ProdConfig')
+        app.config.from_object(ProdConfig)
     elif env == Environment.TEST:
         app.config.from_object('config.TestConfig')
     elif env == Environment.DEVELOPMENT:

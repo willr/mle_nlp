@@ -29,5 +29,6 @@ COPY ./data_ignore/tokenizer.bilstm5.json /app/data_ignore/
 COPY ./src/webapp/ /app/webapp/
 COPY ./src/web.app.py /app/
 COPY ./src/json_submit.py /app/
+COPY ./src/gunicorn_config.py /app/
 
-CMD conda init bash && . /root/.bashrc && conda activate tf_26_deploy && python /app/web.app.py
+CMD conda init bash && . /root/.bashrc && conda activate tf_26_deploy && gunicorn --config=gunicorn_config.py 'webapp.textsimilar:create_app()'

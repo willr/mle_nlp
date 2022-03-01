@@ -34,6 +34,7 @@ dependencies:
   - google-auth-oauthlib=0.4.1=py_2
   - google-pasta=0.2.0=pyhd3eb1b0_0
   - grpcio=1.42.0=py39hce63b2e_0
+  - gunicorn=20.1.0=py39h06a4308_0
   - h5py=3.6.0=py39ha0f2276_0
   - hdf5=1.10.6=hb1b8bf9_0
   - icu=68.1=h2531618_0
