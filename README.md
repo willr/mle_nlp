@@ -33,3 +33,9 @@ Instructions for deploying the conda training environment locally:
 To serve the model you just created
 - Create a local host based model deploy environment and activate it
     - conda env create -f environments/environment.tf_26_deploy_gpu.amd64.linux.yaml
+    - conda activate tf_26_deploy_gpu
+- Execute the model serving website
+    - python src/web.app.py
+    - deployment env defaults to Development, edit in web.app.py line 3
+    - model to load controlled by src/webapp/textsimilar/config.py, edit the appropriate env you have configured
+    
