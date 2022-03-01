@@ -19,6 +19,7 @@ def tokenize_text(q1: str, q2: str):
     global tokenizer
     if tokenizer == None:
         tokenizer_json_path = app.config['TOKENIZER_PATH']
+        print(f'loading tokenizer from path: {tokenizer_json_path}')
         with open(tokenizer_json_path, "r") as f:
             token_json = f.read()
         tokenizer = tokenizer_from_json(token_json)
