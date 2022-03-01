@@ -51,5 +51,11 @@ To serve the model via docker
     - bash docker-run-amd64-deploy.sh
 - either point a web browser at http://localhost:5000 or run: python src/json_submit.py to test the model serving
 
+To pull and run a prebuilt model deploy container (large 4GB+)
+    - bash docker-run-dockerhub-amd64-deploy.sh
+
 Externally the system is accessible at:
-    - ???
+    - http://mle-nlp.grinful.com:5000/
+    - Either use the web UI, or send a request via existing script:
+        - aws_json_submit.py - send json request to AWS hosted instance via REST call
+        - json_submit.py - localhost json request via REST call
