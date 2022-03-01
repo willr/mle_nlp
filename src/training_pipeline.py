@@ -193,7 +193,7 @@ def run_model_training(model: Model, bst_model_path: str, train_data_1: Sequence
 
     hist = model.fit([train_data_1, train_data_2], train_labels, \
             validation_split=.1, \
-            epochs=25, batch_size=128, shuffle=True, \
+            epochs=1, batch_size=128, shuffle=True, \
             callbacks=[early_stopping, model_checkpoint])
 
     model.load_weights(bst_model_path) # sotre model parameters in .h5 file
