@@ -26,8 +26,11 @@ RUN . /root/.bashrc \
     && conda activate tf_26_deploy
 
 # # web app source and data
-COPY ./data_ignore/bilstm5/ /app/data_ignore/bilstm5/
-COPY ./data_ignore/tokenizer.bilstm5.json /app/data_ignore/
+# COPY ./data_ignore/bilstm5/ /app/data_ignore/bilstm5/
+# COPY ./data_ignore/tokenizer.bilstm5.json /app/data_ignore/
+
+COPY $ML_MODEL_PATH /app/data_ignore/
+COPY $TOKENIZER_JSON_PATH /app/data_ignore/
 
 COPY ./src/webapp/ /app/webapp/
 COPY ./src/web.app.py /app/
