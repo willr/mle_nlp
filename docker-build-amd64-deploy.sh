@@ -1,2 +1,2 @@
 #! /usr/env /bin/bash
-docker build --progress=plain  --platform amd64 -t amd64-deploy -f dockerfiles/Dockerfile-amd64-deploy .
+docker build --progress=plain --build-arg ML_MODEL_PATH='./data_ignore/bilstm5' --build-arg TOKENIZER_JSON_PATH='./data_ignore/tokenizer.bilstm5.json' --platform amd64 -t amd64-deploy -f dockerfiles/Dockerfile-amd64-deploy .

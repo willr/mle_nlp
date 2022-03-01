@@ -5,6 +5,9 @@ RUN apt-get install wget -y
 ENV PATH="/root/miniconda3/bin:${PATH}"
 ARG PATH="/root/miniconda3/bin:${PATH}"
 
+ARG ML_MODEL_PATH=""
+ARG TOKENIZER_JSON_PATH=""
+
 WORKDIR /app
 EXPOSE 5000/tcp
 
