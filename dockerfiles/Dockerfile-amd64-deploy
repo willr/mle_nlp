@@ -5,9 +5,6 @@ RUN apt-get install wget -y
 ENV PATH="/root/miniconda3/bin:${PATH}"
 ARG PATH="/root/miniconda3/bin:${PATH}"
 
-ARG ML_MODEL_PATH=""
-ARG TOKENIZER_JSON_PATH=""
-
 WORKDIR /app
 EXPOSE 5000/tcp
 
@@ -25,11 +22,13 @@ RUN . /root/.bashrc \
     && conda env create -f environment.tf_26_deploy.amd64.linux.yaml \
     && conda activate tf_26_deploy
 
+ARG ML_MODEL_PATH=""
+ARG TOKENIZER_JSON_PATH=""
+
 # # web app source and data
 # COPY ./data_ignore/bilstm5/ /app/data_ignore/bilstm5/
 # COPY ./data_ignore/tokenizer.bilstm5.json /app/data_ignore/
-
-COPY $ML_MODEL_PATH /app/data_ignore/
+COPY $ML_MODEL_PATH /app/${ML_MODEL_PATH}
 COPY $TOKENIZER_JSON_PATH /app/data_ignore/
 
 COPY ./src/webapp/ /app/webapp/
