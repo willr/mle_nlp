@@ -9,12 +9,12 @@ DROPOUT_RATE_LSTM = 0.10 # drop-out possibility, random set to avoid outfitting
 DROPOUT_RATE_DENSE = 0.15
 
 ACTIVE_FUNC = 'relu'
-MODEL_TRAINING_PATIENCE = 2
+MODEL_TRAINING_PATIENCE = 5
 VERSION = f'bilstm-{MODEL_TRAINING_PATIENCE}-1'
 
 PATH_TO_GLOVE_FILE = './data_ignore/glove.42B.300d.txt'
 PATH_TO_QUESTIONS = './data_ignore/questions.csv.zip'
 
-TEST_SIZE = 0.98
+TEST_SIZE = 0.1
 RANDOM_STATE = 42
 
