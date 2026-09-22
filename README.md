@@ -59,3 +59,75 @@ Externally the system is accessible at:
     - Either use the web UI, or send a request via existing script:
         - aws_json_submit.py - send json request to AWS hosted instance via REST call
         - json_submit.py - localhost json request via REST call
+
+## Running the tests
+
+Dev-only dependencies (pytest, mlflow) live in `requirements-dev.txt`, layered
+on top of whichever conda env you already activated (see above) rather than
+hand-edited into the pinned `environments/*.yaml` snapshots:
+- pip install -r requirements-dev.txt
+- pytest
+
+The suite lives in `tests/` and covers text preprocessing (`normalize_text`),
+the evaluation metrics math (`src/evaluate.py`), and the Flask API layer. The
+API tests mock the ML boundary (`ml_predict`) rather than loading a real
+model, so they run fast and don't require a trained model file on disk;
+actual model correctness is validated by the eval report instead (see below).
+
+## Experiment tracking and the eval report
+
+`python src/training_pipeline.py` now wraps the run in an MLflow run: params
+from `constants.py`, best validation loss/accuracy, held-out test metrics
+(accuracy/precision/recall/F1/ROC-AUC/confusion matrix), and artifacts (the
+saved model dir, tokenizer json, eval report json) are all logged.
+- View results: `mlflow ui` (from the repo root, after a training run)
+- The eval report also lands on disk at
+  `data_ignore/eval_report.<VERSION>.json` (`VERSION` is the constant in
+  `constants.py`)
+
+## v1 -> v2 rework log
+
+This repo started as a working training/serving pipeline that had never been
+scored against a held-out test set. The rework below adds the things a
+production-minded MLE workflow expects: a real held-out evaluation, no
+training/serving skew, experiment tracking, and test coverage. Gaps found
+and fixed:
+
+1. **A held-out split was prepared but never scored.** `training_pipeline.py`
+   (the script actually used for training) defined `TEST_SIZE`/`RANDOM_STATE`
+   in `constants.py` and imported `train_test_split`, but never called it -
+   there was no test split at all in that script. The exploration notebook
+   (`notebooks/capstone.ipynb`) did better and worse at once: it built a real
+   train/test split and held-out labels, but never computed a single metric
+   against them - model selection across several hand-tuned variants
+   (different training-patience values) was done by eyeballing predictions
+   on a handful of fixed example question pairs instead. The notebook's
+   tokenizer was also fit on train **and** test text combined, leaking test
+   vocabulary into the vocab index.
+   Fixed: `training_pipeline.py` now does a real stratified train/test split
+   and scores the model on the held-out set via `src/evaluate.py`
+   (accuracy/precision/recall/F1/ROC-AUC/confusion matrix), logged through
+   MLflow. The `Tokenizer` is fit on the training split only, to avoid
+   repeating the notebook's leakage mistake.
+2. **Preprocessing was hand-duplicated** between `training_pipeline.py` and
+   `webapp/textsimilar/ml_process.py` - identical ~40-line regex block,
+   copy-pasted. Fixed: both now import a single `normalize_text()` from
+   `src/text_preprocessing.py`.
+3. **`MAX_SEQUENCE_LENGTH` was also duplicated** (hardcoded again in
+   `ml_process.py` instead of imported from `constants.py`). Fixed: same
+   root cause as #2, same fix - `ml_process.py` now imports it from
+   `constants.py`.
+4. **Zero automated tests.** Fixed: a real pytest suite now lives in
+   `tests/`.
+5. **A live API bug**: `routes.py`'s `sm_to_json()` set `json['q2'] = sm.q1`
+   (copy-paste), so the API always echoed `q1` back twice instead of
+   returning `q2`. Fixed, with a regression test locking in the fix.
+6. **`Environment.TEST` config loading was broken**: `create_app()` loaded
+   the test config via a string import path to a module that doesn't exist,
+   while the other two environments passed class objects directly - so the
+   test Flask config path had never actually been exercised. Fixed.
+7. **Serving is single-worker** (`gunicorn_config.py`) with the model as a
+   lazy global singleton - functional but not horizontally scalable. Not
+   yet addressed; planned alongside a move to FastAPI behind autoscaling.
+8. **Prediction history is in-memory only** (`PastTS` global list) - no
+   persistence, so no basis for drift/monitoring. Not yet addressed.

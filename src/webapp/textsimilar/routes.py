@@ -59,7 +59,7 @@ def home():
 def sm_to_json(sm: SimilarityTest):
     json = {}
     json['q1'] = sm.q1
-    json['q2'] = sm.q1
+    json['q2'] = sm.q2
     json['perct'] = sm.rounded
     json['result'] = sm.probability
 

@@ -20,3 +20,6 @@ tokenizer.*.json
 data_ignore
 data_ignore*
 
+# local-only context (personal/career details, not for the public repo)
+*.local.md
+

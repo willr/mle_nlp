@@ -27,7 +27,7 @@ def create_app(env: Environment=Environment.PRODUCTION):
     if env == Environment.PRODUCTION:
         app.config.from_object(ProdConfig)
     elif env == Environment.TEST:
-        app.config.from_object('config.TestConfig')
+        app.config.from_object(TestConfig)
     elif env == Environment.DEVELOPMENT:
         app.config.from_object(DevConfig)
     else:

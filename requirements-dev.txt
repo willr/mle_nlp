@@ -1,0 +1,6 @@
+# Dev-only dependencies layered on top of the conda env in environments/*.yaml.
+# Those files are exact `conda env export` snapshots for the training/serving
+# environments - not hand-edited here. Install after activating the relevant
+# conda env: pip install -r requirements-dev.txt
+pytest
+mlflow

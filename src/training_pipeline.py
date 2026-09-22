@@ -1,4 +1,3 @@
-import re
 from typing import Any, Dict, Sequence, Tuple
 import numpy as np
 import os
@@ -6,6 +5,7 @@ import pandas as pd
 import tensorflow as tf
 
 import constants as c
+from text_preprocessing import normalize_text
 
 from sklearn.model_selection import train_test_split
 
@@ -28,90 +28,53 @@ def create_word_embedding():
 
     return embeddings_index
 
-def normalize_text(text):
-    
-    # split words
-    text = str(text).split()
-    
-    text = " ".join(text)
-
-    # Use re to clean the text
-    text = re.sub(r"[^A-Za-z0-9^,!.\/'+-=]", " ", text, re.IGNORECASE)
-    text = re.sub(r"what's", "what is ", text, re.IGNORECASE)
-    text = re.sub(r"\’s", " ", text, re.IGNORECASE)
-    text = re.sub(r"\'s", " ", text, re.IGNORECASE)
-    text = re.sub(r"\'ve", " have ", text, re.IGNORECASE)
-    text = re.sub(r"can't", "cannot ", text, re.IGNORECASE)
-    text = re.sub(r"n't", " not ", text, re.IGNORECASE)
-    text = re.sub(r"i'm", "i am ", text, re.IGNORECASE)
-    text = re.sub(r"\'re", " are ", text, re.IGNORECASE)
-    text = re.sub(r"\'d", " would ", text, re.IGNORECASE)
-    text = re.sub(r"\'ll", " will ", text, re.IGNORECASE)
-    text = re.sub(r"\‘", " ", text, re.IGNORECASE)
-    text = re.sub(r"\’", " ", text, re.IGNORECASE)
-    text = re.sub(r"\"", " ", text, re.IGNORECASE)
-    text = re.sub(r"\“", " ", text, re.IGNORECASE)
-    text = re.sub(r"\”", " ", text, re.IGNORECASE)
-    text = re.sub(r",", " ", text, re.IGNORECASE)
-    text = re.sub(r"\.", " ", text, re.IGNORECASE)
-    text = re.sub(r"!", " ! ", text, re.IGNORECASE)
-    text = re.sub(r"\/", " ", text, re.IGNORECASE)
-    text = re.sub(r"\^", " ^ ", text, re.IGNORECASE)
-    text = re.sub(r"\+", " + ", text, re.IGNORECASE)
-    text = re.sub(r"\-", " - ", text, re.IGNORECASE)
-    text = re.sub(r"\=", " = ", text, re.IGNORECASE)
-    text = re.sub(r"'", " ", text, re.IGNORECASE)
-    text = re.sub(r":", " : ", text, re.IGNORECASE)
-    text = re.sub(r"(\d+)(k)", r"\g<1>000", text, re.IGNORECASE)
-    text = re.sub(r" e g ", " eg ", text, re.IGNORECASE)
-    text = re.sub(r" b g ", " bg ", text, re.IGNORECASE)
-    text = re.sub(r" u s ", " american ", text, re.IGNORECASE)
-    text = re.sub(r" 9 11 ", "911", text, re.IGNORECASE)
-    text = re.sub(r"e - mail", "email", text, re.IGNORECASE)
-    text = re.sub(r"j k", "jk", text, re.IGNORECASE)
-    text = re.sub(r"\s{2,}", " ", text, re.IGNORECASE)
-    text = re.sub(r"\？", " ", text, re.IGNORECASE)
-    
-    return text
-
 
 def generate_train_data() -> Tuple[Sequence, Sequence, Sequence]:
     df = pd.read_csv(c.PATH_TO_QUESTIONS)
 
-    train_q1 = df['question1'].values
-    train_q2 = df['question2'].values
-    train_labels = df['is_duplicate'].values
+    q1 = df['question1'].values
+    q2 = df['question2'].values
+    labels = df['is_duplicate'].values
 
-    train_text_q1 = [] # preprocessed text of q1
-    train_text_q2 = [] # preprocessed text of q2
+    text_q1 = [normalize_text(text) for text in q1]
+    text_q2 = [normalize_text(text) for text in q2]
 
-    text_set = set() # complete set of words for building embeddings
+    return text_q1, text_q2, labels
 
-    for text in train_q1:
-        tt = normalize_text(text)
-        text_set.add(tt)
-        train_text_q1.append(tt)
-    for text in train_q2:
-        tt = normalize_text(text)
-        text_set.add(tt)
-        train_text_q2.append(tt)
 
-    return train_text_q1, train_text_q2, train_labels
+def split_train_test(text_q1: Sequence, text_q2: Sequence, labels: Sequence) -> Tuple[Sequence, ...]:
+    (train_text_q1, test_text_q1,
+     train_text_q2, test_text_q2,
+     train_labels, test_labels) = train_test_split(
+        text_q1, text_q2, labels,
+        test_size=c.TEST_SIZE,
+        random_state=c.RANDOM_STATE,
+        stratify=labels,
+    )
+    return train_text_q1, train_text_q2, train_labels, test_text_q1, test_text_q2, test_labels
 
-def tokenize_test_data(train_text_q1: str, train_text_q2: str) -> Tuple[Sequence, Sequence, Sequence, Tokenizer]:
+
+def tokenize_data(train_text_q1: Sequence, train_text_q2: Sequence,
+                   test_text_q1: Sequence, test_text_q2: Sequence) -> Tuple[Any, ...]:
     tokenizer = Tokenizer(num_words=c.MAX_NUM_WORDS)
-    tokenizer.fit_on_texts(train_text_q1 + train_text_q2)  # generate a token dictionary, 
+    # Fit on the training split only - fitting on test text would leak test
+    # vocabulary into the tokenizer and inflate held-out metrics.
+    tokenizer.fit_on_texts(train_text_q1 + train_text_q2)
 
-    train_sequences_1 = tokenizer.texts_to_sequences(train_text_q1)  # sequence of q1
-    train_sequences_2 = tokenizer.texts_to_sequences(train_text_q2)  # sequence of q2
+    train_sequences_1 = tokenizer.texts_to_sequences(train_text_q1)
+    train_sequences_2 = tokenizer.texts_to_sequences(train_text_q2)
+    test_sequences_1 = tokenizer.texts_to_sequences(test_text_q1)
+    test_sequences_2 = tokenizer.texts_to_sequences(test_text_q2)
 
     word_index = tokenizer.word_index
-    
-    # Pad all train with Max_Sequence_Length: 60
-    train_data_1 = pad_sequences(train_sequences_1, maxlen=c.MAX_SEQUENCE_LENGTH)  # padded_sequence of q1 as train_data
-    train_data_2 = pad_sequences(train_sequences_2, maxlen=c.MAX_SEQUENCE_LENGTH)  # padded_sequence of q2 as train_data
 
-    return train_data_1, train_data_2, word_index, tokenizer
+    train_data_1 = pad_sequences(train_sequences_1, maxlen=c.MAX_SEQUENCE_LENGTH)
+    train_data_2 = pad_sequences(train_sequences_2, maxlen=c.MAX_SEQUENCE_LENGTH)
+    test_data_1 = pad_sequences(test_sequences_1, maxlen=c.MAX_SEQUENCE_LENGTH)
+    test_data_2 = pad_sequences(test_sequences_2, maxlen=c.MAX_SEQUENCE_LENGTH)
+
+    return train_data_1, train_data_2, test_data_1, test_data_2, word_index, tokenizer
+
 
 def define_model(word_index: Dict[Any, int], embeddings_index: Dict[str, int]) -> Tuple[Model, str]:
     num_tokens = len(word_index) + 2
@@ -176,13 +139,13 @@ def define_model(word_index: Dict[Any, int], embeddings_index: Dict[str, int]) -
 
     preds = Dense(1, activation='sigmoid')(merged)
 
-    bst_model_path = c.VERSION + '.h5' 
+    bst_model_path = c.VERSION + '.h5'
 
     model = Model(inputs=[seq1, seq2], outputs=preds)
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
 
     return model, bst_model_path
-    
+
 def run_model_training(model: Model, bst_model_path: str, train_data_1: Sequence, train_data_2: Sequence, train_labels: Sequence):
     print('Starting the model training')
     # Set early stopping (large patience should be useful)
@@ -195,7 +158,8 @@ def run_model_training(model: Model, bst_model_path: str, train_data_1: Sequence
             callbacks=[early_stopping, model_checkpoint])
 
     model.load_weights(bst_model_path) # sotre model parameters in .h5 file
-    bst_val_score = min(hist.history['val_loss'])
+
+    return hist
 
 def save_model(model: Model, tokenizer: Tokenizer):
     # save the model
@@ -211,24 +175,77 @@ def save_model(model: Model, tokenizer: Tokenizer):
         token_json.write(tokenizer_json)
 
 if __name__ == "__main__":
+    import mlflow
+
+    from evaluate import evaluate_model, print_report, save_report
 
     print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
-    print('Loading Word Embeddings')
-    embeddings_index = create_word_embedding()
+    with mlflow.start_run():
+        mlflow.log_params({
+            'max_sequence_length': c.MAX_SEQUENCE_LENGTH,
+            'max_num_words': c.MAX_NUM_WORDS,
+            'embedding_dim': c.EMBEDDING_DIM,
+            'n_hidden': c.N_HIDDEN,
+            'n_dense': c.N_DENSE,
+            'dropout_rate_lstm': c.DROPOUT_RATE_LSTM,
+            'dropout_rate_dense': c.DROPOUT_RATE_DENSE,
+            'active_func': c.ACTIVE_FUNC,
+            'model_training_patience': c.MODEL_TRAINING_PATIENCE,
+            'test_size': c.TEST_SIZE,
+            'random_state': c.RANDOM_STATE,
+            'version': c.VERSION,
+        })
 
-    print('Split train data')
-    train_text_q1, train_text_q2, train_labels = generate_train_data()
+        print('Loading Word Embeddings')
+        embeddings_index = create_word_embedding()
 
-    print('tokenize train data')
-    train_data_1, train_data_2, word_index, tokenizer = tokenize_test_data(train_text_q1=train_text_q1, train_text_q2=train_text_q2)
+        print('Generating normalized text data')
+        text_q1, text_q2, labels = generate_train_data()
 
-    print('define ml model')
-    model, bst_model_path = define_model(word_index=word_index, embeddings_index=embeddings_index)
+        print('Splitting train/test data')
+        (train_text_q1, train_text_q2, train_labels,
+         test_text_q1, test_text_q2, test_labels) = split_train_test(text_q1, text_q2, labels)
 
-    print('run ml model training')
-    run_model_training(model=model, bst_model_path=bst_model_path, train_data_1=train_data_1, train_data_2=train_data_2, train_labels=train_labels)
+        print('Tokenizing train/test data (tokenizer fit on train split only)')
+        (train_data_1, train_data_2, test_data_1, test_data_2,
+         word_index, tokenizer) = tokenize_data(
+            train_text_q1=train_text_q1, train_text_q2=train_text_q2,
+            test_text_q1=test_text_q1, test_text_q2=test_text_q2,
+        )
 
-    print('save ml model')
-    save_model(model=model, tokenizer=tokenizer)
+        print('define ml model')
+        model, bst_model_path = define_model(word_index=word_index, embeddings_index=embeddings_index)
 
+        print('run ml model training')
+        hist = run_model_training(
+            model=model, bst_model_path=bst_model_path,
+            train_data_1=train_data_1, train_data_2=train_data_2, train_labels=train_labels,
+        )
+
+        val_acc_key = 'val_acc' if 'val_acc' in hist.history else 'val_accuracy'
+        mlflow.log_metrics({
+            'best_val_loss': min(hist.history['val_loss']),
+            'best_val_acc': max(hist.history[val_acc_key]),
+        })
+
+        print('save ml model')
+        save_model(model=model, tokenizer=tokenizer)
+
+        print('evaluate ml model on held-out test set')
+        report = evaluate_model(model, test_data_1, test_data_2, test_labels)
+        print_report(report)
+        mlflow.log_metrics({
+            'test_accuracy': report['accuracy'],
+            'test_precision': report['precision'],
+            'test_recall': report['recall'],
+            'test_f1': report['f1'],
+            'test_roc_auc': report['roc_auc'],
+        })
+
+        report_path = f'data_ignore/eval_report.{c.VERSION}.json'
+        save_report(report, report_path)
+
+        mlflow.log_artifacts(f'data_ignore/{c.VERSION}', artifact_path='model')
+        mlflow.log_artifact(f'./data_ignore/tokenizer.{c.VERSION}.json')
+        mlflow.log_artifact(report_path)
